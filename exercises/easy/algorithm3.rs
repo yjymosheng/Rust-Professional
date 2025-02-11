@@ -5,8 +5,8 @@
 */
 
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+fn sort<T>(array: &mut [T])  where T: Ord{
+        array.sort();
 }
 #[cfg(test)]
 mod tests {

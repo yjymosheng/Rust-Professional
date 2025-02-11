@@ -10,10 +10,23 @@
 */
 
 use std::fmt::{self, Display, Formatter};
+use std::collections::HashSet;
 
 pub fn longest_substring_without_repeating_chars(s: String) -> i32 {
-    // TODO: Implement the logic to find the longest substring without repeating characters
-    0 // Placeholder return value
+    let mut char_set = HashSet::new();
+    let mut left = 0;
+    let mut max_length = 0;
+
+    for right in 0..s.len() {
+        while char_set.contains(&(s[right..right + 1].to_string())) {
+            char_set.remove(&(s[left..left + 1].to_string()));
+            left += 1;
+        }
+        char_set.insert(s[right..right + 1].to_string());
+        max_length = max_length.max(right - left + 1);
+    }
+    
+    max_length as i32
 }
 
 #[cfg(test)]

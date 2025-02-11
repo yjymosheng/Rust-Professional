@@ -13,6 +13,8 @@ impl fmt::Display for NodeNotInGraph {
         write!(f, "accessing a node that is not in the graph")
     }
 }
+
+#[derive(Debug)]
 pub struct UndirectedGraph {
     adjacency_table: HashMap<String, Vec<(String, i32)>>,
 }
@@ -29,7 +31,19 @@ impl Graph for UndirectedGraph {
         &self.adjacency_table
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
+        let (src, dest , val) = edge;
+
+        if !self.contains(src) {
+            self.add_node(src);
+        }
+
+        if !self.contains(dest) {
+            self.add_node(dest);
+        }
+
+        self.adjacency_table_mutable().entry(src.to_string()).and_modify( |e| e.push((dest.to_string(), val)));
+        self.adjacency_table_mutable().entry(dest.to_string()).and_modify( |e| e.push((src.to_string(), val)));
+
     }
 }
 pub trait Graph {
@@ -37,11 +51,24 @@ pub trait Graph {
     fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>>;
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
     fn add_node(&mut self, node: &str) -> bool {
-        //TODO
+        
+        self.adjacency_table_mutable().insert(node.to_string(), vec![]);
 		true
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
+        let (src, dest , val) = edge;
+
+        if !self.contains(src) {
+            self.add_node(src);
+        }
+
+        if !self.contains(dest) {
+            self.add_node(dest);
+        }
+
+        self.adjacency_table_mutable().entry(src.to_string()).and_modify( |e| e.push((dest.to_string(), val)));
+        self.adjacency_table_mutable().entry(dest.to_string()).and_modify( |e| e.push((src.to_string(), val)));
+
     }
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
@@ -77,8 +104,38 @@ mod test_undirected_graph {
             (&String::from("b"), &String::from("c"), 10),
             (&String::from("c"), &String::from("b"), 10),
         ];
+
+        println!("{:?}",graph);
         for edge in expected_edges.iter() {
             assert_eq!(graph.edges().contains(edge), true);
         }
     }
 }
+
+// fn main() {
+//     let mut graph = UndirectedGraph::new();
+//         graph.add_edge(("a", "b", 5));
+//         graph.add_edge(("b", "c", 10));
+//         graph.add_edge(("c", "a", 7));
+//         let expected_edges = [
+//             (&String::from("a"), &String::from("b"), 5),
+//             (&String::from("b"), &String::from("a"), 5),
+//             (&String::from("c"), &String::from("a"), 7),
+//             (&String::from("a"), &String::from("c"), 7),
+//             (&String::from("b"), &String::from("c"), 10),
+//             (&String::from("c"), &String::from("b"), 10),
+//         ];
+
+//         println!("{:?}",graph);
+//         for edge in expected_edges.iter() {
+//             assert_eq!(graph.edges().contains(edge), true);
+//         }
+
+// //         UndirectedGraph { adjacency_table: {} }
+
+// // thread 'main' panicked at src/main.rs:113:13:
+// // assertion `left == right` failed
+// //   left: false
+// //  right: true
+// // note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+// }

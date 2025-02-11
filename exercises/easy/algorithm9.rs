@@ -1,12 +1,13 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-
 
 use std::cmp::Ord;
 use std::default::Default;
+use std::fmt::{Debug, Display};
 
+#[derive(Debug)]
 pub struct Heap<T>
 where
     T: Default,
@@ -36,8 +37,23 @@ where
         self.len() == 0
     }
 
-    pub fn add(&mut self, value: T) {
-        //TODO
+    pub fn add(&mut self, value: T)
+    where
+        T: Debug,
+    {
+        self.count += 1;
+
+        self.items.push(value);
+
+        //do up shift
+        let mut idx = self.count;
+        while idx > 1 && (self.comparator)(&self.items[idx], &self.items[self.parent_idx(idx)]) {
+            let parent_idx = self.parent_idx(idx);
+            self.items.swap(idx, parent_idx);
+
+            idx = self.parent_idx(idx);
+        }
+        // println!("{:?}", self);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -56,9 +72,22 @@ where
         self.left_child_idx(idx) + 1
     }
 
-    fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+    fn smallest_child_idx(&self, idx: usize) -> usize
+    where
+        T: Ord,
+    {
+        let left_idx = self.left_child_idx(idx);
+        // print!("\t fn left_idx {}\t",left_idx);
+
+        let right_idx = self.right_child_idx(idx);
+        // print!("fn right_idx {}",right_idx);
+        if !(right_idx <= self.count) {
+            left_idx
+        } else if (self.comparator)(&self.items[left_idx], &self.items[right_idx]) {
+            left_idx
+        } else {
+            right_idx
+        }
     }
 }
 
@@ -79,13 +108,36 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default + Ord + Debug,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+
+        self.items.swap(1, self.count);
+        let a = self.items.pop();
+        self.count -= 1;
+
+        // println!("\t{:?}", self);
+
+        let mut idx = 1;
+        // println!("before while");
+        while self.children_present(idx) {
+            let smallest_child = self.smallest_child_idx(idx);
+            // println!("\t\t{}",smallest_child);
+            if (self.comparator)(&self.items[smallest_child], &self.items[idx]) {
+                self.items.swap(idx, smallest_child);
+                idx = smallest_child;
+            } else {
+                break;
+            }
+        }
+
+        // println!("{:?}\n", self);
+        a
     }
 }
 
