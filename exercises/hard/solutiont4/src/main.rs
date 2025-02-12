@@ -1,6 +1,8 @@
 
 use std::time::{Duration, Instant};
 use crate::calc_time::time_info;
+//I AM NOT DONE 
+//Calculated according to ISO8061 standard
 
 mod calc_time;
 
