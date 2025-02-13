@@ -12,10 +12,15 @@
 use std::{collections::HashSet, fmt::{self, Display, Formatter}};
 
 pub fn intersection(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
-    let set1: HashSet<_> = nums1.into_iter().collect();  
-    let set2: HashSet<_> = nums2.into_iter().collect();  
+    // let set1: HashSet<_> = nums1.into_iter().collect();  
+    // let set2: HashSet<_> = nums2.into_iter().collect();  
 
-    set1.intersection(&set2).cloned().collect()
+    // set1.intersection(&set2).cloned().collect()
+
+    let mut a  = nums1.iter().filter(|x| nums2.contains(x)).map(|x| *x) .collect::<HashSet<i32>>().into_iter().collect::<Vec<i32>>();
+a.sort();
+a
+
 }
 
 #[cfg(test)]
